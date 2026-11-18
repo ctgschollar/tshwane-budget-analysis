@@ -39,7 +39,7 @@ CITY = round(float((IXH.spend_weighted - IXH.gap_vs_city).iloc[0]), 1)   # Tshwa
 
 BUDGETS = [  # (data column, plain label, mayor, kind)
     ("2022/23 original", "2022/23 – Williams (DA)", "Williams", "original"),
-    ("2022/23 adjusted", "2022/23 adjusted – Williams (DA)", "Williams", "adjusted"),
+    ("2022/23 adjusted", "2022/23 adjusted – mayor at adoption not stated", "Unknown", "adjusted"),
     ("2023/24 original", "2023/24 – Brink (DA)", "Brink", "original"),
     ("2023/24 adjusted", "2023/24 adjusted – Brink (DA)", "Brink", "adjusted"),
     ("2024/25 original", "2024/25 – Brink (DA)", "Brink", "original"),
@@ -50,9 +50,9 @@ BUDGETS = [  # (data column, plain label, mayor, kind)
 ]
 ACTUAL = "2024/25 actual"
 ACTUAL_LABEL = "Actual spending, Jul 2024–Jun 2025 (both mayors)"
-PARTY = {"Williams": "#184f95", "Brink": "#5598e7", "Moya": "#eb6834"}
-PARTY_TINT = {"Williams": "#8ba7ca", "Brink": "#b0cdf3", "Moya": "#f5b49a"}
-PARTY_NAME = {"Williams": "Williams (DA)", "Brink": "Brink (DA)", "Moya": "Moya (ActionSA)"}
+PARTY = {"Williams": "#184f95", "Brink": "#5598e7", "Moya": "#eb6834", "Unknown": "#6b6a66"}
+PARTY_TINT = {"Williams": "#8ba7ca", "Brink": "#b0cdf3", "Moya": "#f5b49a", "Unknown": "#d6d5d0"}
+PARTY_NAME = {"Williams": "Williams (DA)", "Brink": "Brink (DA)", "Moya": "Moya (ActionSA)", "Unknown": "mayor at adoption not stated"}
 BAND_ORDER = ["0–20", "20–40", "40–60", "60–80", "80–100"]
 BAND_COL = dict(zip(BAND_ORDER, ["#62bd9a", "#3aa37e", "#228464", "#16664c", "#0c4634"]))
 MID = ["In a specific ward", "Spread across an area (by population)", "Listed for several areas, not divided",
@@ -72,8 +72,18 @@ AI_LONG = ("The data extraction, analysis code, charts and write-up in this proj
            "write the code or calculations by hand. AI can make mistakes: every figure is meant to be traceable to a page in the "
            "source documents, and corrections are welcome via GitHub issues.")
 R13 = "Excludes a R13m Refilwe roads item that the City's adjustment budget counts in its total but omits from its project list."
-NOTE_WILLIAMS = ("The 2022/23 budget was adopted under Williams; Brink took office in March 2023. The 2022/23 mid-year adjustment "
-                 "was prepared before early March 2023; the documents do not give its adoption date.")
+NOTE_WILLIAMS = ("Mayors, per the City's 2022/23 annual report (p36): Williams 1 Jul 2022–13 Feb 2023; Makwarela 28 Feb–10 Mar 2023; "
+                 "Brink from 31 Mar 2023. The 2022/23 budget was approved on 26 May 2022. The 2022/23 mid-year adjustment was written "
+                 "before 2 March 2023; the documents do not give its adoption date or the mayor at the time.")
+HOW_TO_READ = ("How to read this: each budget's number is the average share of Black African residents in the wards its money goes to. "
+               "Tshwane's residents, averaged the same way, come to 82.7%. A bar at +4.5 means 87.3%: money leans toward Blacker wards. "
+               "A bar at -1.2 means 81.5%: it leans slightly toward less Black wards. Zero means the same mix as Tshwane's residents.")
+HOW_TO_READ_2 = ("How to read this: each position is the difference between the average share of Black African residents in the "
+                 "wards a budget's money goes to and Tshwane's 82.7%. A point at +4.5 means 87.3%: money leans toward Blacker wards. "
+                 "A point at -1.2 means 81.5%: it leans slightly toward less Black wards. An arrow to the right means the mid-year "
+                 "adjustment moved money toward Blacker wards; to the left, toward less Black wards.")
+SUB1 = ("Each bar: the average share of Black African residents in the wards a budget's money goes to, compared with Tshwane "
+        "as a whole (82.7%). +4.5 means 87.3%, so money leans toward Blacker wards; −1.2 means 81.5%, so it leans slightly away.")
 NOTE_2425 = "The 2024/25 budget was adopted under Brink; its mid-year adjustment was made under Moya."
 
 FS = 1.0   # font scale: 1.0 for PNG (phone-legible at 1600px), smaller for the HTML page
@@ -81,6 +91,18 @@ FS = 1.0   # font scale: 1.0 for PNG (phone-legible at 1600px), smaller for the 
 
 def fz(n: float) -> int:
     return int(round(n * FS))
+
+
+def wrap_html(text: str, width: int) -> str:
+    """Wrap a subtitle onto several lines for Plotly (which does not wrap titles)."""
+    lines, cur = [], ""
+    for w in text.split():
+        if len(cur) + len(w) + 1 > width:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = (cur + " " + w).strip()
+    return "<br>".join(lines + [cur])
 
 
 def layout(fig: go.Figure, title: str, subtitle: str, height: int, top: int = 200) -> go.Figure:
@@ -105,7 +127,8 @@ def chart1() -> tuple[go.Figure, list[str]]:
                     showlegend=(not adj and mayor not in seen),
                     marker=dict(color=PARTY_TINT[mayor] if adj else PARTY[mayor], line=dict(color=PARTY[mayor], width=3),
                                 pattern=dict(shape="/" if adj else "", fgcolor=PARTY[mayor], size=14, solidity=0.3)),
-                    text=[f"{g:+.1f}"], textposition="outside", textfont=dict(size=fz(32), color=INK), cliponaxis=False,
+                    text=[f"{float(IXH.loc[c, 'spend_weighted']):.1f}%  ({g:+.1f})"], textposition="outside",
+                    textfont=dict(size=fz(30), color=INK), cliponaxis=False,
                     customdata=[[float(IXH.loc[c, 'spend_weighted'])]],
                     hovertemplate=f"{lab}<br>Budget's number: %{{customdata[0]:.1f}}%<br>Difference from 82.7: %{{x:+.1f}} points<extra></extra>")
         if not adj:
@@ -115,29 +138,29 @@ def chart1() -> tuple[go.Figure, list[str]]:
     act = float(IXH.loc[ACTUAL, "gap_vs_city"])
     fig.add_scatter(y=[ACTUAL_LABEL], x=[act], mode="markers+text", name="Actual spending (spans both mayors)",
                     marker=dict(symbol="diamond", size=fz(34), color="#ffffff", line=dict(color=INK, width=4)),
-                    text=[f"{act:+.1f}"], textposition="middle right", textfont=dict(size=fz(32)), cliponaxis=False,
+                    text=[f"{float(IXH.loc[ACTUAL, 'spend_weighted']):.1f}%  ({act:+.1f})"], textposition="middle right",
+                    textfont=dict(size=fz(30)), cliponaxis=False,
                     hovertemplate=f"{ACTUAL_LABEL}<br>%{{x:+.1f}} points<extra></extra>")
     xs = [float(IXH.loc[c, "gap_vs_city"]) for c, *_ in BUDGETS] + [act]
     fig.update_yaxes(categoryorder="array", categoryarray=cats[::-1], tickfont=dict(size=fz(28)), showgrid=False, ticksuffix="  ")
-    fig.update_xaxes(range=[min(xs + [0]) - 1.5, max(xs) + 1.8], gridcolor=GRID, zeroline=False, tickfont=dict(size=fz(26)),
-                     title=dict(text="Points above / below where people live", font=dict(size=fz(28))))
+    fig.update_xaxes(range=[min(xs + [0]) - 3.4, max(xs) + 3.6], gridcolor=GRID, zeroline=False, tickfont=dict(size=fz(26)),
+                     ticksuffix="", title=dict(text="Difference from 82.7% (percentage points)", font=dict(size=fz(28))))
     fig.add_vline(x=0, line=dict(color=INK, width=4))
-    fig.add_annotation(x=0, y=1.0, yref="paper", text="matches population (82.7%)", showarrow=False, xanchor="left", xshift=8,
+    fig.add_annotation(x=0, y=1.0, yref="paper", text="0 = same mix as Tshwane's residents (82.7%)", showarrow=False, xanchor="left", xshift=8,
                        yanchor="bottom", font=dict(size=fz(26), color=INK))
     g25 = float(IXH.loc["2025/26 adjusted", "gap_vs_city"])
-    fig.add_annotation(x=g25, y="2025/26 adjusted – Moya (ActionSA)", text="† excludes a R13m item (see note)", showarrow=False,
-                       xanchor="left", xshift=fz(100), font=dict(size=fz(24), color=INK2))
-    layout(fig, "How each budget compares with where people live",
-           "Above zero: money leans toward Blacker wards. Below zero: it leans away.", 1500, top=300)
+    fig.add_annotation(x=g25, y="2025/26 adjusted – Moya (ActionSA)", text="† see note", showarrow=False,
+                       xanchor="left", xshift=fz(250), font=dict(size=fz(24), color=INK2))
+    layout(fig, "Each budget compared with Tshwane as a whole", wrap_html(SUB1, 105), 1620, top=fz(430) + round((1 - FS) * 80))
     fig.update_layout(bargap=0.28, legend=dict(orientation="h", xref="container", x=0.015, xanchor="left",
-                                                yref="container", y=1 - fz(150) / 1500, yanchor="top",
+                                                yref="container", y=1 - fz(255) / 1620, yanchor="top",
                                                 font=dict(size=fz(26)), traceorder="normal"),
                       margin=dict(l=40, r=60))
-    return fig, [NOTE_WILLIAMS, "† " + R13]
+    return fig, [HOW_TO_READ, NOTE_WILLIAMS, "† " + R13]
 
 
 # ---------------- chart 2 ----------------
-PAIRS = [("2022/23", "2022/23 original", "2022/23 adjusted", "Williams", "Williams"),
+PAIRS = [("2022/23", "2022/23 original", "2022/23 adjusted", "Williams", "Unknown"),
          ("2023/24", "2023/24 original", "2023/24 adjusted", "Brink", "Brink"),
          ("2024/25", "2024/25 original", "2024/25 adjusted (adj. budget)", "Brink", "Moya"),
          ("2025/26", "2025/26 original", "2025/26 adjusted", "Moya", "Moya")]
@@ -160,16 +183,19 @@ def chart2() -> tuple[go.Figure, list[str]]:
                         hovertemplate=f"{yr} after mid-year adjustment – {PARTY_NAME[ma]}: %{{x:+.1f}}<extra></extra>")
         fig.add_annotation(x=(g0 + g1) / 2, y=y, text=f"<b>{g1 - g0:+.1f} points</b>{' †' if yr == '2025/26' else ''}",
                            showarrow=False, yshift=fz(42), font=dict(size=fz(30)), bgcolor=SURF)
-        who = PARTY_NAME[ma] if mo == ma else f"{PARTY_NAME[mo]} budget,<br>adjusted under {PARTY_NAME[ma]}"
+        who = (PARTY_NAME[ma] if mo == ma else f"{PARTY_NAME[mo]} budget,<br>adjusted – mayor not stated" if ma == "Unknown"
+               else f"{PARTY_NAME[mo]} budget,<br>adjusted under {PARTY_NAME[ma]}")
         fig.add_annotation(x=0, xref="paper", y=y, text=f"<b>{yr}</b><br><span style='font-size:{fz(24)}px;color:{INK2}'>{who}</span>",
                            showarrow=False, xanchor="right", xshift=-24, align="right", font=dict(size=fz(30)))
     fig.update_xaxes(range=[min(xs + [0]) - 1.2, max(xs + [0]) + 1.2], gridcolor=GRID, zeroline=True, zerolinecolor=INK, zerolinewidth=4,
-                     tickfont=dict(size=fz(26)), title=dict(text="Points above / below where people live (0 = 82.7%)", font=dict(size=fz(28))))
+                     tickfont=dict(size=fz(26)), title=dict(text="Difference from 82.7% (percentage points). 0 = same mix as Tshwane's residents", font=dict(size=fz(28))))
     fig.update_yaxes(visible=False, range=[0.4, n + 0.75])
     layout(fig, "Mid-year changes",
-           "Dot = budget as adopted. Arrow head = after the mid-year adjustment.", 1250, top=200)
+           wrap_html("Dot = budget as adopted; arrow head = after the mid-year adjustment. Position = difference between the average "
+                     "share of Black African residents in the wards the money goes to and Tshwane's 82.7%.", 105), 1290, top=fz(240) + round((1 - FS) * 60))
     fig.update_layout(margin=dict(l=fz(460), r=50))
-    return fig, ["Councils revise budgets mid-year, often moving money away from projects that are running late.", NOTE_2425, "† " + R13]
+    return fig, ["Councils revise budgets mid-year, often moving money away from projects that are running late.", HOW_TO_READ_2,
+                 NOTE_2425, NOTE_WILLIAMS, "† " + R13]
 
 
 # ---------------- chart 3: Sankey ----------------
@@ -313,6 +339,7 @@ def chart4() -> tuple[go.Figure, list[str]]:
 
 # ---------------- footer strip (PNG) ----------------
 def with_footer(png: str, notes: list[str]) -> None:
+    notes = [n.replace("\u2212", "-") for n in notes]   # footer font has no U+2212 minus sign
     img = Image.open(png).convert("RGB")
     W = img.width
     f_note = ImageFont.truetype(FONT_FILE, 27)
@@ -447,17 +474,17 @@ footer {{ color:{INK2}; font-size:15px; margin-top:40px; border-top:1px solid {G
 .tablewrap {{ overflow-x:auto; max-width:100%; }}
 @media (max-width:640px) {{ body {{ font-size:17px; }} h1 {{ font-size:26px; }} table {{ font-size:15px; }} th,td {{ padding:6px; }} td.num {{ white-space:normal; }} }}
 </style></head><body><main>
-<h1>Tshwane's capital budget: does it follow where people live?</h1>
+<h1>Tshwane's capital budget: does it go to Blacker or less Black wards?</h1>
 <div class="panel">
 <p>The <b>capital budget</b> is money for building and fixing infrastructure: roads, pipes, substations, clinics. It is not the money for day-to-day services like refuse collection.</p>
-<p>The question: does this money go to Blacker or less Black parts of the city, compared with where people live?</p>
+<p>The question: does this money go to Blacker or less Black parts of the city, compared with the make-up of Tshwane as a whole?</p>
 <p>We take every rand of capital spending, look at the ward it serves, and ask what share of that ward's residents are Black African. Averaged over all the money, that gives one number per budget. Tshwane's residents, averaged the same way, come to {CITY:.1f}%. If the budget's number is higher, money leans toward Blacker wards; if lower, it leans away.</p>
 <p class="basis">Infrastructure is counted where its users live, not where it is built. For example, the Rooiwal treatment works is counted for Temba and Hammanskraal, which it serves.</p>
 <p class="note">Population figures are Stats SA 2022 ward estimates. A ward is one of Tshwane's 107 electoral wards.</p>
 <p class="ai"><b>How this was made.</b> {html.escape(AI_LONG)} Code, data and full method: <a href="{REPO_URL}">{REPO}</a>.</p>
 </div>
 
-<h2>1. How each budget compares with where people live</h2>
+<h2>1. Each budget compared with Tshwane as a whole</h2>
 <div class="chart">{div(c1, True)}</div>{note(n1)}
 
 <h2>2. Mid-year changes</h2>
@@ -497,16 +524,16 @@ def headline_md() -> str:
     b = hsel(BD[BD.scheme == "headline"])
     share8 = float(b[(b.column == "2025/26 original") & (b.band == "80–100")].share_of_population.iloc[0])
     lines = [
-        f"- **Tshwane's residents average {CITY:.1f}% Black African** (Stats SA 2022 ward estimates). A budget whose money averages higher leans toward Blacker wards; lower, it leans away.",
+        f"- **Tshwane's residents average {CITY:.1f}% Black African** (Stats SA 2022 ward estimates). A budget whose money averages higher leans toward Blacker wards; lower, it leans toward less Black wards. The figure in brackets is the difference from 82.7%, in percentage points: +4.5 means 87.3%.",
         f"- **2022/23 – Williams (DA): {s('2022/23 original'):.1f}% ({g('2022/23 original'):+.1f} points); 2023/24 – Brink (DA): {s('2023/24 original'):.1f}% ({g('2023/24 original'):+.1f}).** Both budgets leaned toward Blacker wards by a similar amount.",
-        f"- **2024/25 – Brink (DA): {s('2024/25 original'):.1f}% ({g('2024/25 original'):+.1f}).** Lower than the two years before, still slightly above where people live.",
-        f"- **2024/25 adjusted – Moya (ActionSA): {s('2024/25 adjusted (adj. budget)'):.1f}% ({g('2024/25 adjusted (adj. budget)'):+.1f}).** The mid-year adjustment to the 2024/25 budget, made under Moya; the only budget in the series below where people live. Actual spending that year (July 2024–June 2025, spanning both mayors): {s(ACTUAL):.1f}% ({g(ACTUAL):+.1f}).",
-        f"- **2025/26 – Moya (ActionSA): {s('2025/26 original'):.1f}% ({g('2025/26 original'):+.1f}); 2026/27 – Moya (ActionSA): {s('2026/27 original'):.1f}% ({g('2026/27 original'):+.1f}).** Above where people live again; 2026/27 is the budget as tabled in May 2026.",
+        f"- **2024/25 – Brink (DA): {s('2024/25 original'):.1f}% ({g('2024/25 original'):+.1f}).** Lower than the two years before, still slightly above Tshwane as a whole.",
+        f"- **2024/25 adjusted – Moya (ActionSA): {s('2024/25 adjusted (adj. budget)'):.1f}% ({g('2024/25 adjusted (adj. budget)'):+.1f}).** The mid-year adjustment to the 2024/25 budget, made under Moya; the only budget in the series below Tshwane as a whole. Actual spending that year (July 2024–June 2025, spanning both mayors): {s(ACTUAL):.1f}% ({g(ACTUAL):+.1f}).",
+        f"- **2025/26 – Moya (ActionSA): {s('2025/26 original'):.1f}% ({g('2025/26 original'):+.1f}); 2026/27 – Moya (ActionSA): {s('2026/27 original'):.1f}% ({g('2026/27 original'):+.1f}).** Above Tshwane as a whole again; 2026/27 is the budget as tabled in May 2026.",
         f"- **Mid-year adjustments moved the number by {s('2022/23 adjusted') - s('2022/23 original'):+.1f} (2022/23), {s('2023/24 adjusted') - s('2023/24 original'):+.1f} (2023/24), {s('2024/25 adjusted (adj. budget)') - s('2024/25 original'):+.1f} (2024/25) and {s('2025/26 adjusted') - s('2025/26 original'):+.1f} points (2025/26; excludes a R13m Refilwe roads item missing from the City's project list).** Wards that are 80–100% Black African are home to {share8:.0f}% of residents; only {COV_LO}–{COV_HI}% of each budget could be linked to specific areas.",
     ]
     return ("# Tshwane capital budget: headline figures\n\n"
             "Infrastructure is counted where its users live, not where it is built; money listed only by region is spread across "
-            "the region's wards by population. Figures from `output/v2_index.csv` and `output/v2_bands.csv` (service-area basis).\n\n"
+            "the region's wards by population. Figures from `data/v2_index.csv` and `data/v2_bands.csv` (service-area basis).\n\n"
             + "\n".join(lines) + f"\n\n_{FOOTER}_\n")
 
 

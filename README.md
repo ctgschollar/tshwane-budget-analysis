@@ -1,4 +1,4 @@
-# Tshwane capital budget: does it follow where people live?
+# Tshwane capital budget: does it go to Blacker or less Black wards?
 
 **Live report:** https://ctgschollar.github.io/tshwane-budget-analysis/
 
@@ -8,13 +8,13 @@ The data extraction, analysis code, charts and write-up in this project were pro
 
 ## What this looks at
 
-The City of Tshwane's **capital budget** is money for building and fixing infrastructure: roads, pipes, substations, clinics. It is not the money for day-to-day services like refuse collection. The question is whether that money goes to Blacker or less Black parts of the city, compared with where people live.
+The City of Tshwane's **capital budget** is money for building and fixing infrastructure: roads, pipes, substations, clinics. It is not the money for day-to-day services like refuse collection. The question is whether that money goes to Blacker or less Black parts of the city, compared with the make-up of Tshwane as a whole.
 
 Every rand that can be linked to an area is matched to the wards it serves, and each ward is described by the share of its residents who are Black African (Stats SA 2022 ward estimates). Averaged over all the money, that gives one number per budget. Tshwane's residents, averaged the same way, come to **82.7%**. Infrastructure is counted where its users live, not where it is built (for example, the Rooiwal treatment works is counted for Temba and Hammanskraal, which it serves).
 
-**Headline figures** (points above or below 82.7%):
+**Headline figures.** The number is the average share of Black African residents in the wards a budget's money goes to. The second column is its difference from Tshwane's 82.7%, in percentage points: +4.5 means 87.3% (money leans toward Blacker wards); −1.2 means 81.5% (leans slightly toward less Black wards); 0 would mean the same mix as Tshwane's residents.
 
-| Budget | Number | vs where people live |
+| Budget | Number | Difference from 82.7% |
 |---|---|---|
 | 2022/23 – Williams (DA) | 87.3% | +4.5 |
 | 2023/24 – Brink (DA) | 87.0% | +4.2 |
@@ -24,7 +24,7 @@ Every rand that can be linked to an area is matched to the wards it serves, and 
 | 2026/27 – Moya (ActionSA) | 87.8% | +5.0 |
 | Actual spending, Jul 2024–Jun 2025 (spans both mayors) | 83.4% | +0.7 |
 
-The 2022/23 and 2023/24 budgets leaned toward Blacker wards by a similar amount. The 2024/25 budget was lower but still slightly above where people live. Its mid-year adjustment, made under Moya, is the only budget in the series below where people live. The 2025/26 and 2026/27 budgets are above where people live again. Mid-year adjustments moved the number by +1.3 (2022/23), +1.5 (2023/24), −2.6 (2024/25) and −1.9 points (2025/26; excludes a R13m Refilwe roads item missing from the City's project list). More: [docs/headline_figures.md](docs/headline_figures.md); full method and results: [docs/summary.md](docs/summary.md).
+The 2022/23 and 2023/24 budgets leaned toward Blacker wards by a similar amount. The 2024/25 budget was lower but still slightly above Tshwane as a whole. Its mid-year adjustment, made under Moya, is the only budget in the series below Tshwane as a whole. The 2025/26 and 2026/27 budgets are above Tshwane as a whole again. Mid-year adjustments moved the number by +1.3 (2022/23), +1.5 (2023/24), −2.6 (2024/25) and −1.9 points (2025/26; excludes a R13m Refilwe roads item missing from the City's project list). The 2022/23 mid-year adjustment is not labelled with a mayor: the City's 2022/23 annual report (p36) gives Williams as mayor from 1 July 2022 to 13 February 2023, Makwarela from 28 February to 10 March 2023 and Brink from 31 March 2023, and the documents do not give the adjustment's adoption date. More: [docs/headline_figures.md](docs/headline_figures.md); full method and results: [docs/summary.md](docs/summary.md).
 
 ## What this doesn't show
 
