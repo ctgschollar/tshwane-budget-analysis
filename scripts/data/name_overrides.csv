@@ -1,0 +1,19 @@
+year,wbs,clean_name,reason
+2023/24,9.805202.1.S.SH.05.3,"AMBIGUOUS OVERPRINT: Sunnyside Project - Construction of 264 Social Housing units / Townlands Project - Construction of 1,200 social housing units",ambiguous: two project names printed on top of each other; left unmatched
+2023/24,9.804016.1.B.BE.02.3,"Belle Ombre - Phase 2 (Overflow car park, Electric Fencing etc)",decoded: WBS suffix BE; overprint is wrapped tail of preceding AFC row
+2023/24,9.804030.1.R.RO.05.7,Upgrading of Road from gravel to tar in Ekangala (Ward 103 and 104),decoded: overprint is wrapped tail of preceding row
+2023/24,9.804709.1.C.DE.05.5,Township Water and Sanitation Services Development: Tshwane Contributions (City Wide),decoded: WBS lookup in 2024/25 MTREF SA36
+2023/24,9.804700.1.W.AB.05.W,(710026B) Replacement Of Critical Worn-Out Water Network Pipes (Area B),decoded: WBS suffix AB; overprint is tail '(Area A)' of preceding row
+2023/24,9.804700.1.W.AC.05.W,(710026C) Replacement Of Critical Worn-Out Water Network Pipes (Area C),decoded: WBS suffix AC
+2023/24,9.804700.1.W.AD.05.W,(710026D) Replacement Of Critical Worn-Out Water Network Pipes (Area D),decoded: WBS suffix AD
+2023/24,9.804700.1.W.AE.05.W,(710026E) Replacement Of Critical Worn-Out Water Network Pipes (Area E),decoded: WBS suffix AE
+2023/24,9.804700.1.W.SI.05.W,(710026J) Replacement Of Worn-Out Water Network Pipes (Sinoville),decoded: WBS suffix SI; name per 2024/25 SA36
+2023/24,9.804713.1.W.KL.05.1,Klipgat WWTW: Upgrading of existing infrastructure to 40Ml/d,decoded: WBS suffix KL
+2023/24,9.804713.1.W.R1.22.2,Rooiwal WWTW Phase 1: Upgrading of Existing Infrastructure,decoded: WBS suffix R1
+2023/24,9.804723.1.R.UP.05.3,Relining/upgrading reservoirs (City Wide),decoded: overprint of '(City Wide)'
+2023/24,9.804016.1.B.IN.02.6,Denneboom Intermodal facility,decoded: overprint is tail '(...Atteridgeville)' of preceding Line 3 row
+2023/24,9.804713.1.W.TB.05.2,Temba and Babelegi WWTW upgrade of existing infrastucture,decoded: WBS suffix TB; overprint is tail 'Projects (City wide)' of preceding row
+2024/25,9.801101.1.M.FE.13.A,Capital Funded from Operating (Capital Moveables),decoded: overprint is wrapped department name
+2024/25,UPGRADING_MARKET,Upgrading And Extension Of Market Facilities,decoded: overprint is wrapped department name
+2024/25,9.805100.1.M.CM.01.A,Furniture and Office Equipment,decoded: overprint is wrapped department name (TEDA)
+2024/25,9.802100.1.P.WC.05.W,Provision of waste containers,decoded: overprint is wrapped department name

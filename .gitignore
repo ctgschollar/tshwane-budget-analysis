@@ -1,0 +1,30 @@
+# Source documents and extracted text (not redistributed)
+*.pdf
+txt/
+# Working / scratch folders and raw third-party downloads
+work/
+scratch*/
+scratchpad/
+census_dl/
+townships_dl/
+regions_dl/
+*_dl/
+shots/
+# Python / environments
+__pycache__/
+*.pyc
+venv/
+.venv/
+geo_venv/
+# Secrets / credentials
+.env
+.env.*
+*.key
+*.pem
+credentials*.json
+.claude/settings.local.json
+# Large files (>20 MB) are kept out by review; common large formats:
+*.zip
+*.gpkg
+*.shp
+*.geojson
